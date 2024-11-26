@@ -1,0 +1,16 @@
+<main>
+  <h1>Food Inventory</h1>
+  <button (click)="addFoodItem()">+ Add Food Item</button>
+
+  <ul>
+    <li *ngFor="let food of foodItems">
+      <div>
+        <strong>{{ food.name }}</strong>
+        - Quantity: {{ food.quantity }} - Cost: ${{ food.cost }} - Week:
+        {{ food.week }}
+      </div>
+      <button (click)="increaseQuantity(food)">Increase Quantity</button>
+      <button (click)="increaseCost(food)">Increase Cost</button>
+    </li>
+  </ul>
+</main>
