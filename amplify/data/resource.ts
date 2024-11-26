@@ -6,10 +6,14 @@ adding a new "isDone" field as a boolean. The authorization rule below
 specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
+
 const schema = a.schema({
-  Todo: a
+  FoodItem: a
     .model({
-      content: a.string(),
+      name: a.string(),
+      quantity: a.string(),
+      cost: a.string(),
+      week: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
@@ -20,7 +24,6 @@ export const data = defineData({
   schema,
   authorizationModes: {
     defaultAuthorizationMode: 'apiKey',
-    // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
