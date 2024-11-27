@@ -9,8 +9,8 @@ const client = generateClient<Schema>();
   selector: 'app-food-inventory',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './food-inventory.component.html',
-  styleUrl: './food-inventory.component.css',
+  templateUrl: './inventory.component.html',
+  styleUrls: ['./inventory.component.css'],
 })
 export class FoodInventoryComponent implements OnInit {
   foodItems: any[] = [];
@@ -24,6 +24,9 @@ export class FoodInventoryComponent implements OnInit {
       client.models.FoodItem.observeQuery().subscribe({
         next: ({ items }) => {
           this.foodItems = items;
+        },
+        error: (error) => {
+          console.error('Error fetching food items:', error);
         },
       });
     } catch (error) {
@@ -40,11 +43,11 @@ export class FoodInventoryComponent implements OnInit {
     try {
       client.models.FoodItem.create({
         name,
-        quantity: quantity || '0', // Default to "0" if no value is entered
-        cost: cost || '0', // Default to "0" if no value is entered
+        quantity: quantity || '0', // Default to "0" if no value entered
+        cost: cost || '0', // Default to "0" if no value entered
         week,
       });
-      this.listFoodItems();
+      this.listFoodItems(); // Refresh the list after adding
     } catch (error) {
       console.error('Error adding food item', error);
     }
@@ -52,23 +55,39 @@ export class FoodInventoryComponent implements OnInit {
 
   updateFoodItem(id: string, quantity: string) {
     try {
-      client.models.FoodItem.update(id, {
-        quantity, // No conversion needed since it's a string now
-      });
-      this.listFoodItems();
+      // Fetch the food item first to ensure we have all fields
+      const foodItem = this.foodItems.find((item) => item.id === id);
+      if (!foodItem) {
+        console.error('Food item not found');
+        return;
+      }
+
+      // Ensure we're passing an object with the correct structure
+      const updatedFoodItem = {
+        id, // Pass the ID to update the correct item
+        name: foodItem.name, // Keep the existing name
+        quantity, // Pass the new quantity as a string
+        cost: foodItem.cost, // Keep the existing cost
+        week: foodItem.week, // Keep the existing week
+      };
+
+      // Update the food item in the database
+      client.models.FoodItem.update(updatedFoodItem);
+
+      this.listFoodItems(); // Refresh the list after updating
     } catch (error) {
       console.error('Error updating food item', error);
     }
   }
 
   increaseQuantity(food: any) {
-    // Convert the quantity from string to number, increment, then convert back to string
+    // Increase the quantity by 1 (convert to number, increment, convert back to string)
     const newQuantity = (parseInt(food.quantity, 10) + 1).toString();
     this.updateFoodItem(food.id, newQuantity);
   }
 
   increaseCost(food: any) {
-    // Convert the cost from string to number, increment, then convert back to string
+    // Increase the cost by 1 (convert to number, increment, convert back to string)
     const newCost = (parseFloat(food.cost) + 1).toString();
     this.updateFoodItem(food.id, newCost);
   }

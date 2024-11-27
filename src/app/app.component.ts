@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { FoodInventoryComponent as InventoryComponent } from './inventory/inventory.component';
+import { FoodInventoryComponent } from './inventory/inventory.component'; // Correct import
 import { Amplify } from 'aws-amplify';
 import outputs from '../../amplify_outputs.json';
 
@@ -11,7 +11,7 @@ Amplify.configure(outputs);
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  imports: [RouterOutlet, InventoryComponent],
+  imports: [RouterOutlet, FoodInventoryComponent], // Correct component import
 })
 export class AppComponent {
   title = 'food-plan-app';
